@@ -3,7 +3,6 @@ package com.cs328.myrmi.transport.tcp
 import com.cs328.myrmi.exception.ConnectIOException
 import com.cs328.myrmi.transport.Channel
 import com.cs328.myrmi.transport.Connection
-import com.cs328.myrmi.transport.Endpoint
 import com.cs328.myrmi.transport.TransportConstants
 import java.io.DataOutputStream
 import java.io.IOException
@@ -13,8 +12,7 @@ class TCPChannel(
 ) : Channel {
 
     private var reuseConn = ArrayDeque<TCPConnection>()
-    override val endpoint: Endpoint
-        get() = ep
+    override val endpoint = ep
 
     /**
      * Create a new connection to the endpoint.
@@ -33,7 +31,7 @@ class TCPChannel(
     }
 
     override fun free(conn: Connection, reuse: Boolean) {
-        if (reuse && conn.isReusable()) {
+        if (reuse && conn.isReusable) {
             reuseConn.addLast(conn as TCPConnection)
         } else {
             conn.close()
@@ -56,7 +54,7 @@ class TCPChannel(
         try {
             val out = DataOutputStream(this.outputStream)
             out.writeInt(TransportConstants.MAGIC)
-            out.writeByte(TransportConstants.VERSION)
+            out.writeShort(TransportConstants.VERSION)
             out.flush()
         } catch (e: IOException) {
             throw ConnectIOException("Failed to write RMI transport header", e)
@@ -66,7 +64,7 @@ class TCPChannel(
     private fun Connection.writeProtocolHeader() {
         try {
             val out = DataOutputStream(this.outputStream)
-            if (!this.isReusable()) {
+            if (!this.isReusable) {
                 out.writeByte(TransportConstants.SINGLE_OP_PROTOCOL)
                 out.flush()
             } else {

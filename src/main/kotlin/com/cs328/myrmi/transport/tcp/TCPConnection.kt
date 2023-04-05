@@ -3,11 +3,7 @@ package com.cs328.myrmi.transport.tcp
 import com.cs328.myrmi.transport.Channel
 import com.cs328.myrmi.transport.Connection
 import com.cs328.myrmi.transport.TransportConstants
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.net.Socket
 
 class TCPConnection(
@@ -23,6 +19,9 @@ class TCPConnection(
     ) {
         this.socket = socket
     }
+
+    override val isReusable: Boolean = true
+
     override fun releaseInputStream() {
         //do nothing here
     }
@@ -41,10 +40,6 @@ class TCPConnection(
             }
         } catch (ignore: IOException) {
         }
-    }
-
-    override fun isReusable(): Boolean {
-        return true
     }
 
     private var roundTrip = -1

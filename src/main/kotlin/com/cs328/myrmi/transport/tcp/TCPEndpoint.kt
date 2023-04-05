@@ -1,15 +1,14 @@
 package com.cs328.myrmi.transport.tcp
 
-import com.cs328.myrmi.transport.Channel
 import com.cs328.myrmi.transport.Endpoint
 import com.cs328.myrmi.transport.Target
 import java.net.ServerSocket
 import java.net.Socket
 
 class TCPEndpoint private constructor(
-    private val host: String,
-    private val port: Int,
-    private val isLocal: Boolean
+    val host: String,
+    val port: Int,
+    val isLocal: Boolean
 ): Endpoint {
 
     /** create a remote end point */
@@ -24,7 +23,7 @@ class TCPEndpoint private constructor(
         }
     }
 
-    override val channel = TCPChannel(this)
+    override val channel by lazy { TCPChannel(this) }
 
     override fun exportObject(obj: Target) {
         if (!isLocal)
