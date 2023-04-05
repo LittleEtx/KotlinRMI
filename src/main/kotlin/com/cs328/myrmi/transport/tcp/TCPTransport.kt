@@ -1,5 +1,6 @@
 package com.cs328.myrmi.transport.tcp
 
+import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.transport.*
 import com.cs328.myrmi.transport.Target
 import java.io.*
@@ -10,6 +11,8 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 class TCPTransport(var endpoint: TCPEndpoint) : Transport() {
+    private val logger by lazy { RMILogger.of(TCPTransport::class.java.name) }
+
     companion object {
         private const val maxConnectionThreads = Int.MAX_VALUE
         private const val maxConnectionIdleTime = 60000L  //default 60s
@@ -29,15 +32,11 @@ class TCPTransport(var endpoint: TCPEndpoint) : Transport() {
         }
     }
 
-
-    private var exportCount = 0
     private lateinit var server: ServerSocket
     override fun exportObject(obj: Target) {
-        synchronized(this) {
-            listen()
-            ++exportCount
-        }
+        logger.fine("export object $obj on ${endpoint.host}:${endpoint.port}")
         super.exportObject(obj)
+        listen()
     }
 
     private var connectionCount = 0
@@ -52,14 +51,16 @@ class TCPTransport(var endpoint: TCPEndpoint) : Transport() {
         server = endpoint.newServerSocket()
         val thread = Thread {
             server.use {
+                logger.fine("socket server start listening on ${endpoint.port}")
                 while (true) {
                     val socket = server.accept()
+                    logger.fine("accept connection from ${socket.remoteSocketAddress}")
                     connectionThreadPool.execute {
                         socket.use {
                             val tempName = Thread.currentThread().name
                             Thread.currentThread().name =
-                                "RMI TCP Connection(${++connectionCount}) - ${it.remoteSocketAddress}"
-                            it.acceptIncomeTransmission()
+                                "RMI TCP Connection(${++connectionCount}) - ${socket.remoteSocketAddress}"
+                            socket.acceptIncomeTransmission()
                             Thread.currentThread().name = tempName
                         }
                     }
@@ -88,25 +89,38 @@ class TCPTransport(var endpoint: TCPEndpoint) : Transport() {
             if (magic != TransportConstants.MAGIC ||
                 version.toInt() != TransportConstants.VERSION
             ) {
+                logger.info("unknown RMI request from ${this.remoteSocketAddress}")
                 return
             }
 
+            logger.info("accept RMI request from ${this.remoteSocketAddress}")
             val bufOutput = BufferedOutputStream(this.getOutputStream())
             val output = DataOutputStream(bufOutput)
 
             val remoteConn = TCPConnection(TCPChannel(
-                TCPEndpoint(this.remoteSocketAddress.toString(), this.port)), bufInput, bufOutput)
+                TCPEndpoint(this.inetAddress.toString(), this.port)), bufInput, bufOutput)
 
             //read protocol type
             when (input.read()) {
                 TransportConstants.SINGLE_OP_PROTOCOL -> {
+                    logger.fine("accept single op protocol from ${this.remoteSocketAddress}")
                     remoteConn.handleMessage(false)
                 }
                 TransportConstants.STREAM_PROTOCOL -> {
+                    logger.fine("accept stream protocol from ${this.remoteSocketAddress}")
+                    output.write(TransportConstants.PROTOCOL_ACK)
+                    output.flush()
                     remoteConn.handleMessage(true)
                 }
-                else -> {
+                TransportConstants.MULTIPLEX_PROTOCOL -> {
                     //not supported
+                    logger.info("unsupported protocol type from ${this.remoteSocketAddress}")
+                    output.write(TransportConstants.PROTOCOL_NACK)
+                    output.flush()
+                }
+                else -> {
+                    //unknown protocol
+                    logger.info("unknown protocol type from ${this.remoteSocketAddress}")
                     output.write(TransportConstants.PROTOCOL_NACK)
                     output.flush()
                 }
@@ -122,22 +136,31 @@ class TCPTransport(var endpoint: TCPEndpoint) : Transport() {
      */
     private fun Connection.handleMessage(persistent: Boolean) {
         do {
+            val ep = this.channel.endpoint as TCPEndpoint
             //read operation
             when (this.inputStream.read()) {
                 TransportConstants.CALL -> {
+                    logger.fine("accept call from ${ep.host}:${ep.port}")
                     val call = StreamRemoteCall(this)
-                    if (serviceCall(call)) return  //release conn if service failed
+                    if (!serviceCall(call)) {
+                        //release conn if service failed
+                        logger.warning("service call failed from ${ep.host}:${ep.port}, connection will be closed")
+                        return
+                    }
                 }
                 TransportConstants.PING -> {
+                    logger.fine("accept ping from ${ep.host}:${ep.port}")
                     //ping action
                     this.outputStream.write(TransportConstants.PING_ACK)
                     this.outputStream.flush()
                     this.releaseOutputStream()
                 }
                 TransportConstants.DGC_ACK -> {
+                    logger.warning("accept DGC ack from ${ep.host}:${ep.port}, but DGC not yet implemented")
                     TODO("DGC not yet implemented")
                 }
                 else -> {
+                    logger.info("unknown operation from ${ep.host}:${ep.port}, connection will be closed")
                     //unknown operation or no more operation
                     return
                 }
