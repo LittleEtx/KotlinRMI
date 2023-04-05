@@ -5,7 +5,6 @@ import com.cs328.myrmi.transport.Channel
 import com.cs328.myrmi.transport.Connection
 import com.cs328.myrmi.transport.Endpoint
 import com.cs328.myrmi.transport.TransportConstants
-import java.io.DataOutput
 import java.io.DataOutputStream
 import java.io.IOException
 

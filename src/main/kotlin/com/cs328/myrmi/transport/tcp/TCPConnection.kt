@@ -47,10 +47,8 @@ class TCPConnection(
         return true
     }
 
-    var roundTrip = -1
-        private set
-    var lastPing = -1L
-        private set
+    private var roundTrip = -1
+    private var lastPing = -1L
 
     /**
      * ping the server to see if connection is dead
