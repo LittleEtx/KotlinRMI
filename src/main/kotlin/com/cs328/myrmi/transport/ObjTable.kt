@@ -50,8 +50,6 @@ class ObjTable private constructor() {
                 target.markRemoved()
             }
         }
-
-
     }
 
     class ObjectEndpoint(val objID: ObjID, val transport: Transport) {

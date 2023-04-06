@@ -85,7 +85,6 @@ class TCPTransport(private var endpoint: TCPEndpoint) : Transport() {
                 }
             }
         }
-        thread.isDaemon = true
         thread.name = "RMI TCP Accept - ${endpoint.port}"
         thread.start()
     }

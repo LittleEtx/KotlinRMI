@@ -9,7 +9,6 @@ import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.transport.LiveRef
 import com.cs328.myrmi.transport.Target
 import java.io.IOException
-import java.io.ObjectInput
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
@@ -17,7 +16,7 @@ import java.lang.reflect.Method
  * This class acts like a stub and skeleton at the server
  */
 class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
-    private val logger by lazy { RMILogger.of(this::class.java.name) }
+    private val logger by lazy { RMILogger.of(UnicastServerRef::class.java.name) }
     private lateinit var methodCache: Map<Long, Method>
 
     companion object {
@@ -28,19 +27,18 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
      * Dispatch the call
      */
     override fun dispatch(obj: Remote, call: RemoteCall) {
-        logger.fine("dispatching call $call")
-        val input: ObjectInput
-        val methodHash: Long
+        logger.info("exported object ${liveRef.id} dispatching call $call")
         try {
+            val input = call.inputStream
+            val methodHash: Long
             try {
-                input = call.inputStream
                 methodHash = input.readLong()
             } catch (e: Exception) {
                 throw UnmarshalException("failed to read method hash", e)
             }
 
             val method = methodCache[methodHash] ?: throw UnmarshalException("Unrecognized method hash: $methodHash")
-            logger.fine("invoking method $method")
+            logger.fine("exported object ${liveRef.id} ready to invoke method $method, now read paras")
 
             //read params
             val params: Array<Any?>
@@ -50,6 +48,8 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
                 throw UnmarshalException("failed to read params", e)
             }
 
+            logger.fine("exported object ${liveRef.id} successfully read all paras")
+
             //invoke method
             val result: Any?
             try {
@@ -57,15 +57,16 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
             } catch (e: InvocationTargetException) {
                 throw e.targetException
             }
-
+            logger.fine("method successfully executed on ${liveRef.id}, return value $result")
             //write result
             try {
                 call.getResultStream(true).writeObject(result)
             } catch (e: IOException) {
-                throw RemoteException("failed to write result", e)
+                throw RemoteException("failed to write result on ${liveRef.id}", e)
             }
 
         } catch (e: Throwable) {
+            logger.fine("invoking method on ${liveRef.id} throws exception")
             //write exception
             var exp = e
             if (exp is Error) {
@@ -85,7 +86,7 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
      * This method will create the target and export it on the local endpoint
      */
     fun exportObject(obj: Remote, permanent: Boolean) {
-        logger.info("exporting object $obj")
+        logger.info("exporting object $obj, permanent = $permanent")
 
         val target = Target(obj, liveRef.id, this, permanent)
         liveRef.exportObject(target)
@@ -93,7 +94,7 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
         //cache method
         synchronized(remoteClassMethods) {
             methodCache = remoteClassMethods.getOrPut(obj.javaClass) {
-                obj.javaClass.classes
+                obj.javaClass.interfaces
                     .filter { Remote::class.java.isAssignableFrom(it) }
                     .fold (mutableMapOf()) { acc, clazz ->
                         acc.putAll(clazz.methods.map { Util.getMethodHash(it) to it })
@@ -101,5 +102,7 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
                     }
             }
         }
+
+        logger.fine("cache methods: \n" + methodCache.map { "${it.key}-${it.value}"}.joinToString("\n"))
     }
 }

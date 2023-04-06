@@ -4,8 +4,14 @@ import java.util.logging.Logger
 
 class RMILogger {
     companion object {
+        val loggers = mutableMapOf<String, Logger>()
+
         fun of(name: String): Logger {
-            return Logger.getLogger(name)
+            return loggers.getOrPut(name) {
+                val logger = Logger.getLogger(name)
+                logger.parent = parentLogger
+                logger
+            }
         }
 
         /** parent logger of all MyRmi loggers, ensure that no extra output is printed to console */
