@@ -13,6 +13,9 @@ import java.io.ObjectInput
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
+/**
+ * This class acts like a stub and skeleton at the server
+ */
 class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
     private val logger by lazy { RMILogger.of(this::class.java.name) }
     private lateinit var methodCache: Map<Long, Method>

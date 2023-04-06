@@ -101,11 +101,16 @@ class StreamRemoteCall(val connection: Connection) : RemoteCall {
 
     }
 
+    /** exception throw by the server */
+    var serverException: Throwable? = null
+        private set
+
     private fun handleException(exception: Exception) {
         //combine the trace of the exception with the trace of the remote call
         val serverTrace = exception.stackTrace
         val clientTrace = Thread.currentThread().stackTrace
         exception.stackTrace = serverTrace + clientTrace
+        serverException = exception
         throw exception
     }
 
