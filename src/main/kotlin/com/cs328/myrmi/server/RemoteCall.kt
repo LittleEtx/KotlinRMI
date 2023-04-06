@@ -1,9 +1,7 @@
-package com.cs328.myrmi.transport
+package com.cs328.myrmi.server
 
-import com.cs328.myrmi.Remote
 import java.io.ObjectInput
 import java.io.ObjectOutput
-import java.lang.reflect.Method
 
 /**
  * Provide stream methods for writing parameters and reading return values.
@@ -23,7 +21,7 @@ interface RemoteCall {
     /**
      * execute remote call
      */
-    fun executeCall(obj: Remote, method: Method, params: Array<Any>): Any?
+    fun executeCall()
 
     /**
      * finish the remote call
