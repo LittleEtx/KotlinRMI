@@ -5,7 +5,7 @@ import com.cs328.myrmi.server.Dispatcher
 import com.cs328.myrmi.server.ObjID
 import java.lang.ref.WeakReference
 
-class Target(
+class Target private constructor(
     val weakRef: WeakReference<Remote>,
     val id: ObjID,
     val dispatcher: Dispatcher,

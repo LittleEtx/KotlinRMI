@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 class TCPTransport(private var endpoint: TCPEndpoint) : Transport() {
-    private val logger by lazy { RMILogger.of(TCPTransport::class.java.name) }
+    private val logger by lazy { RMILogger.of(this::class.java.name) }
 
     companion object {
         private const val maxConnectionThreads = Int.MAX_VALUE

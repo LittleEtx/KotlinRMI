@@ -11,14 +11,14 @@ import java.lang.reflect.Method
  */
 interface RemoteCall {
     /** the output stream for writing parameters */
-    val outputSteam: ObjectOutput
+    val outputStream: ObjectOutput
     fun releaseOutputStream()
     /** input stream for both server and client */
     val inputStream: ObjectInput
     fun releaseInputStream()
 
     /** the result writing stream for server */
-    val resultStream: ObjectOutput
+    fun getResultStream(success: Boolean): ObjectOutput
 
     /**
      * execute remote call
