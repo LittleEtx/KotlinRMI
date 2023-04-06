@@ -10,7 +10,7 @@ import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
-class TCPTransport(var endpoint: TCPEndpoint) : Transport() {
+class TCPTransport(private var endpoint: TCPEndpoint) : Transport() {
     private val logger by lazy { RMILogger.of(TCPTransport::class.java.name) }
 
     companion object {
@@ -33,10 +33,28 @@ class TCPTransport(var endpoint: TCPEndpoint) : Transport() {
     }
 
     private lateinit var server: ServerSocket
-    override fun exportObject(obj: Target) {
-        logger.fine("export object $obj on ${endpoint.host}:${endpoint.port}")
-        super.exportObject(obj)
+
+    private var exportCount = 0
+    override fun exportObject(target: Target) {
+        logger.fine("export object $target on ${endpoint.host}:${endpoint.port}")
+        super.exportObject(target)
         listen()
+        synchronized(this) {
+            ++exportCount
+        }
+    }
+
+    @Synchronized
+    override fun onTargetClosed() {
+        --exportCount
+        if (exportCount == 0) {
+            try {
+                server.close()
+            } catch (e: Exception) {
+                logger.info("socket server on ${endpoint.port} throw exception on closing: ${e.message}")
+            }
+            logger.fine("socket server on ${endpoint.port} closed")
+        }
     }
 
     private var connectionCount = 0
