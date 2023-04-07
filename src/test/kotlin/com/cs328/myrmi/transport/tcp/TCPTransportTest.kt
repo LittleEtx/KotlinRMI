@@ -22,9 +22,10 @@ fun main() {
             //do nothing
         }
     }
+    val stub = object : Remote {}
 
     val transport = TCPTransport(TCPEndpoint.getLocalEndPoint(8080))
-    transport.exportObject(Target(obj, ObjID.new(), dispatcher, true))
+    transport.exportObject(Target(obj, ObjID.new(), stub, dispatcher, true))
     var conn = TCPEndpoint.getLocalEndPoint(8080).channel.newConnection()
     conn as TCPConnection
     println(conn.isDead())

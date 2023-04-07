@@ -10,9 +10,10 @@ import java.net.Socket
  */
 class TCPEndpoint private constructor(
     val host: String,
-    val port: Int,
+    private var listenPort: Int,
     @Transient val isLocal: Boolean
 ): Endpoint {
+    val port get() = listenPort
 
     /** create a remote end point */
     constructor(host: String, port: Int): this(host, port, false)
@@ -40,7 +41,7 @@ class TCPEndpoint private constructor(
             }
         }
 
-        /** map from port to transport */
+        /** map from port to endpoints, ensuring no multiply local endpoints on a port are created */
         private val localEndpoints = mutableMapOf<Int, TCPEndpoint>()
     }
 
@@ -57,6 +58,10 @@ class TCPEndpoint private constructor(
     fun newServerSocket(): ServerSocket {
         if (!isLocal)
             throw IllegalStateException("Cannot create server socket for non-local endpoint")
-        return ServerSocket(port)
+        val server = ServerSocket(port)
+        if (listenPort == 0) {
+            listenPort = server.localPort
+        }
+        return server
     }
 }
