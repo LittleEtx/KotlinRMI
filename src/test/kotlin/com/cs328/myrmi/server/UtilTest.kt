@@ -1,6 +1,7 @@
 package com.cs328.myrmi.server
 
 import com.cs328.myrmi.Remote
+import com.cs328.myrmi.TestRemoteInterface
 import com.cs328.myrmi.transport.LiveRef
 import com.cs328.myrmi.transport.tcp.TCPEndpoint
 
@@ -14,7 +15,7 @@ fun main() {
 
     val liveRef = LiveRef(ObjID(114514), TCPEndpoint("localhost", 8080))
     val ref = UnicastRef(liveRef)
-    val test = Util.createProxy(TestRemoteClass::class.java, ref) as TestRemoteClass
+    val test = Util.createProxy(TestRemoteInterface::class.java, ref) as TestRemoteInterface
 
     println(test.square(3))
     println(test.square(5))

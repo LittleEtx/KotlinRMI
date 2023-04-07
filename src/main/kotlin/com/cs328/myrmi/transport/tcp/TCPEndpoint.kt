@@ -5,6 +5,9 @@ import com.cs328.myrmi.transport.Target
 import java.net.ServerSocket
 import java.net.Socket
 
+/**
+ * Endpoint for TCP transport, representing a host
+ */
 class TCPEndpoint private constructor(
     val host: String,
     val port: Int,

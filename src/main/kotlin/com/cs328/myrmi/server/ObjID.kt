@@ -8,7 +8,7 @@ class ObjID(
 ) : Serializable {
     companion object {
         private const val serialVersionUID = -5092223564114849833L
-
+        const val REGISTRY_ID = 0L
         fun new(): ObjID {
             return ObjID(Random.nextLong())
         }

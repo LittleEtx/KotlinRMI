@@ -4,7 +4,7 @@ import com.cs328.myrmi.server.ObjID
 import com.cs328.myrmi.transport.tcp.TCPEndpoint
 
 /**
- * Help creating channels to a given endpoint. With Channel connection
+ * This class helps to create channels to a given endpoint. With Channel connection
  * can be created for transmission.
  */
 class LiveRef(val id: ObjID, val endpoint: Endpoint) {

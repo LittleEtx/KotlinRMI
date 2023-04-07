@@ -1,5 +1,6 @@
 package com.cs328.myrmi.server
 
+import java.io.Externalizable
 import java.lang.reflect.Method
 
 /**
@@ -7,7 +8,7 @@ import java.lang.reflect.Method
  * also provides methods for object methods
  * Remote objects are identified by a LiveRef.
  */
-interface RemoteRef {
+interface RemoteRef: Externalizable {
     fun invoke(method: Method, params: Array<Any?>): Any?
 
     val remoteToString: String

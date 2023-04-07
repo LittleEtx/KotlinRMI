@@ -1,21 +1,18 @@
-package com.cs328.myrmi.server
+package com.cs328.myrmi.registry
 
 import com.cs328.myrmi.TestRemoteImpl
 import com.cs328.myrmi.runtime.RMILogger
-import com.cs328.myrmi.transport.LiveRef
+import com.cs328.myrmi.server.UnicastServerRef
 import java.util.logging.ConsoleHandler
 import java.util.logging.Level
 
-const val id = 114514L
-
 fun main() {
-    val logger = RMILogger.parentLogger
+    val logger = RMILogger.of(UnicastServerRef::class.java.name)
     logger.level = Level.ALL
     val handler = ConsoleHandler()
     handler.level = Level.ALL
     logger.addHandler(handler)
-    logger.fine("test UnicastServerRef")
 
-    val ref = LiveRef(ObjID(id), 8080)
-    UnicastServerRef(ref).exportObject(TestRemoteImpl(), true)
+    val registry = LocateRegistry.createRegistry(8080)
+    registry.rebind("test", TestRemoteImpl())
 }

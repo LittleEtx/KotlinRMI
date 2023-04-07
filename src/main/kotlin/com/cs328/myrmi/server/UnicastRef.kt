@@ -6,6 +6,8 @@ import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.transport.LiveRef
 import com.cs328.myrmi.transport.StreamRemoteCall
 import java.io.IOException
+import java.io.ObjectInput
+import java.io.ObjectOutput
 import java.lang.reflect.Method
 
 /**
@@ -65,6 +67,14 @@ open class UnicastRef(val liveRef: LiveRef) : RemoteRef {
 
     override fun remoteEquals(other: Any?): Boolean {
         return other is UnicastRef && liveRef.remoteEquals(other.liveRef)
+    }
+
+    override fun writeExternal(out: ObjectOutput?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun readExternal(`in`: ObjectInput?) {
+        TODO("Not yet implemented")
     }
 
 }
