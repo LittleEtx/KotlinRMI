@@ -12,7 +12,7 @@ class RemoteObjectInvocationHandler(remoteRef: RemoteRef) : RemoteObject(remoteR
      */
     override fun invoke(proxy: Any?, method: Method?, args: Array<Any?>?): Any? {
         //ensure proxy is bound to this invocation handler
-        if (Proxy.isProxyClass(proxy?.javaClass)) {
+        if (!Proxy.isProxyClass(proxy?.javaClass)) {
             throw IllegalArgumentException("not a proxy!")
         }
         if (Proxy.getInvocationHandler(proxy) != this) {
