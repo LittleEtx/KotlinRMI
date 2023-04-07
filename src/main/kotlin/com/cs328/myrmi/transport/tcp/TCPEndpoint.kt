@@ -11,14 +11,16 @@ import java.net.Socket
 class TCPEndpoint private constructor(
     val host: String,
     val port: Int,
-    val isLocal: Boolean
+    @Transient val isLocal: Boolean
 ): Endpoint {
 
     /** create a remote end point */
     constructor(host: String, port: Int): this(host, port, false)
 
+    @delegate:Transient
     private val transports by lazy { TCPTransport(this) }
 
+    @delegate:Transient
     override val channel by lazy { TCPChannel(this) }
 
     override fun exportObject(obj: Target) {

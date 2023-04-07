@@ -16,7 +16,9 @@ import java.lang.reflect.Method
  * This class acts like a stub and skeleton at the server
  */
 class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
+    @delegate: Transient
     private val logger by lazy { RMILogger.of(UnicastServerRef::class.java.name) }
+    @Transient
     private lateinit var methodCache: Map<Long, Method>
 
     companion object {
@@ -85,10 +87,10 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
      * Export the object to make it available to receive incoming calls.
      * This method will create the target and export it on the local endpoint
      */
-    fun exportObject(obj: Remote, permanent: Boolean) {
+    fun exportObject(obj: Remote, permanent: Boolean): Remote {
         logger.info("exporting object $obj, permanent = $permanent")
-
-        val target = Target(obj, liveRef.id, this, permanent)
+        val stub = Util.createProxy(obj::class.java, UnicastRef(liveRef)) as Remote
+        val target = Target(obj, liveRef.id, stub, this, permanent)
         liveRef.exportObject(target)
 
         //cache method
@@ -104,5 +106,6 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
         }
 
         logger.fine("cache methods: \n" + methodCache.map { "${it.key}-${it.value}"}.joinToString("\n"))
+        return stub
     }
 }

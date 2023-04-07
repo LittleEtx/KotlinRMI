@@ -6,14 +6,13 @@ import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.transport.LiveRef
 import com.cs328.myrmi.transport.StreamRemoteCall
 import java.io.IOException
-import java.io.ObjectInput
-import java.io.ObjectOutput
 import java.lang.reflect.Method
 
 /**
  * stub class in the client
  */
 open class UnicastRef(val liveRef: LiveRef) : RemoteRef {
+    @delegate:Transient
     private val logger by lazy {  RMILogger.of(UnicastRef::class.java.name) }
     override fun invoke(method: Method, params: Array<Any?>): Any? {
         logger.info("Client invoke remote method")
@@ -68,13 +67,4 @@ open class UnicastRef(val liveRef: LiveRef) : RemoteRef {
     override fun remoteEquals(other: Any?): Boolean {
         return other is UnicastRef && liveRef.remoteEquals(other.liveRef)
     }
-
-    override fun writeExternal(out: ObjectOutput?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun readExternal(`in`: ObjectInput?) {
-        TODO("Not yet implemented")
-    }
-
 }

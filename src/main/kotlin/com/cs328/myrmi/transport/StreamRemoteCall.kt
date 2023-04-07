@@ -3,6 +3,7 @@ package com.cs328.myrmi.transport
 import com.cs328.myrmi.exception.ConnectIOException
 import com.cs328.myrmi.exception.MarshalException
 import com.cs328.myrmi.exception.UnmarshalException
+import com.cs328.myrmi.server.MarshalOutputStream
 import com.cs328.myrmi.server.ObjID
 import com.cs328.myrmi.server.RemoteCall
 import java.io.*
@@ -27,7 +28,7 @@ class StreamRemoteCall(private val connection: Connection) : RemoteCall {
     /** get output stream for client */
     override val outputStream: ObjectOutput by lazy {
         try {
-            ObjectOutputStream(connection.outputStream)
+            MarshalOutputStream(connection.outputStream)
         } catch (e: IOException) {
             throw ConnectIOException("failed to create output stream", e)
         }

@@ -2,13 +2,19 @@ package com.cs328.myrmi.transport
 
 import com.cs328.myrmi.server.ObjID
 import com.cs328.myrmi.transport.tcp.TCPEndpoint
+import java.io.Serializable
 
 /**
  * This class helps to create channels to a given endpoint. With Channel connection
  * can be created for transmission.
  */
-class LiveRef(val id: ObjID, val endpoint: Endpoint) {
+class LiveRef(val id: ObjID, val endpoint: Endpoint) : Serializable {
+    companion object {
+        private const val serialVersionUID = -3771632406492077964L
+    }
 
+
+    @delegate:Transient
     val channel: Channel by lazy { endpoint.channel }
 
     /** get a live ref basing on the local endpoint */

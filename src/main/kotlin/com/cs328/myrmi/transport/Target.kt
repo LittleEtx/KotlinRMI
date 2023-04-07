@@ -8,11 +8,12 @@ import java.lang.ref.WeakReference
 class Target private constructor(
     val weakRef: WeakReference<Remote>,
     val id: ObjID,
+    val stub: Remote, //the proxy for this obj
     val dispatcher: Dispatcher,
 ) {
     private var strongRef: Remote? = null
-    constructor(obj: Remote, id: ObjID, dispatcher: Dispatcher, permanent: Boolean) :
-            this(WeakReference(obj), id, dispatcher) {
+    constructor(obj: Remote, id: ObjID, stub: Remote, dispatcher: Dispatcher, permanent: Boolean) :
+            this(WeakReference(obj), id, stub, dispatcher) {
         if (permanent) {
             strongRef = obj
         }
