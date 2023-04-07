@@ -12,10 +12,10 @@ import java.lang.reflect.Method
  * stub class in the client
  */
 open class UnicastRef(val liveRef: LiveRef) : RemoteRef {
-    @delegate:Transient
-    private val logger by lazy {  RMILogger.of(UnicastRef::class.java.name) }
+    private val logger get() = RMILogger.of(UnicastRef::class.java.name)
+
     override fun invoke(method: Method, params: Array<Any?>): Any? {
-        logger.info("Client invoke remote method")
+        logger.info("Client invoke remote method $method with params $params")
 
         //check params match method
         if (method.parameterCount != params.size) {

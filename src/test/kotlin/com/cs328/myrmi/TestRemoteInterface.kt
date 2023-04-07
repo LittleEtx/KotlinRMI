@@ -8,4 +8,6 @@ interface TestRemoteInterface: Remote {
     fun testExp()
 
     fun print(str: String)
+
+    fun increase(): Int
 }

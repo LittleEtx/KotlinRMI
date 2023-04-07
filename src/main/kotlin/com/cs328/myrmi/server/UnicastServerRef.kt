@@ -16,9 +16,7 @@ import java.lang.reflect.Method
  * This class acts like a stub and skeleton at the server
  */
 class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
-    @delegate: Transient
-    private val logger by lazy { RMILogger.of(UnicastServerRef::class.java.name) }
-    @Transient
+    private val logger get() = RMILogger.of(UnicastServerRef::class.java.name)
     private lateinit var methodCache: Map<Long, Method>
 
     companion object {
@@ -29,7 +27,7 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
      * Dispatch the call
      */
     override fun dispatch(obj: Remote, call: RemoteCall) {
-        logger.info("exported object ${liveRef.id} dispatching call $call")
+        logger.info("exported object $obj on $liveRef dispatching call $call")
         try {
             val input = call.inputStream
             val methodHash: Long
@@ -40,7 +38,7 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
             }
 
             val method = methodCache[methodHash] ?: throw UnmarshalException("Unrecognized method hash: $methodHash")
-            logger.fine("exported object ${liveRef.id} ready to invoke method $method, now read paras")
+            logger.fine("$obj ready to invoke method $method, now read paras")
 
             //read params
             val params: Array<Any?>
@@ -50,7 +48,7 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
                 throw UnmarshalException("failed to read params", e)
             }
 
-            logger.fine("exported object ${liveRef.id} successfully read all paras")
+            logger.fine("$obj successfully read all paras")
 
             //invoke method
             val result: Any?
@@ -59,16 +57,16 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
             } catch (e: InvocationTargetException) {
                 throw e.targetException
             }
-            logger.fine("method successfully executed on ${liveRef.id}, return value $result")
+            logger.fine("$obj method $method successfully executed on $liveRef, return value $result")
             //write result
             try {
                 call.getResultStream(true).writeObject(result)
             } catch (e: IOException) {
-                throw RemoteException("failed to write result on ${liveRef.id}", e)
+                throw RemoteException("failed to write result on $liveRef", e)
             }
 
         } catch (e: Throwable) {
-            logger.fine("invoking method on ${liveRef.id} throws exception")
+            logger.fine("invoking method on $liveRef throws exception $e")
             //write exception
             var exp = e
             if (exp is Error) {

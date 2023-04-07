@@ -37,8 +37,8 @@ class TCPTransport(private var endpoint: TCPEndpoint) : Transport() {
     private var exportCount = 0
     override fun exportObject(target: Target) {
         logger.fine("export object $target on ${endpoint.host}:${endpoint.port}")
-        super.exportObject(target)
         listen()
+        super.exportObject(target)
         synchronized(this) {
             ++exportCount
         }

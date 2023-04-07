@@ -4,7 +4,7 @@ import java.util.logging.Logger
 
 class RMILogger {
     companion object {
-        val loggers = mutableMapOf<String, Logger>()
+        private val loggers = mutableMapOf<String, Logger>()
 
         fun of(name: String): Logger {
             return loggers.getOrPut(name) {
@@ -19,6 +19,6 @@ class RMILogger {
             val logger = Logger.getLogger("com.cs328.myrmi")
             logger.useParentHandlers = false
             logger
-        }
+        }!!
     }
 }

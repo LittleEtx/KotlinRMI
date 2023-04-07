@@ -3,18 +3,21 @@ package com.cs328.myrmi.transport
 import com.cs328.myrmi.Remote
 import com.cs328.myrmi.exception.ExportException
 import com.cs328.myrmi.exception.NoSuchObjectException
+import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.server.ObjID
 import java.lang.ref.WeakReference
 
 /** the class that records all exported object */
 class ObjTable private constructor() {
     companion object {
+        private val logger = RMILogger.of(ObjTable::class.java.name)
         private val tableLock = Any()
 
         private val objTable = HashMap<ObjectEndpoint, Target>()
-        private val implTable = HashMap<WeakReference<Remote>, Target>()
+        private val implTable = HashMap<WeakRef<Remote>, Target>()
 
         fun putTarget(target: Target) {
+            logger.fine("put target $target into table, impl: ${target.weakRef.get()}")
             synchronized(tableLock) {
                 val oe = ObjectEndpoint(target.id, target.exportedTransport)
                 if (objTable.containsKey(oe)) {
@@ -23,6 +26,7 @@ class ObjTable private constructor() {
                 if (implTable.containsKey(target.weakRef)) {
                     throw ExportException("The object is already exported")
                 }
+                implTable[target.weakRef] = target
                 objTable[oe] = target
             }
         }
@@ -34,8 +38,9 @@ class ObjTable private constructor() {
         }
 
         fun getTarget(impl: Remote): Target? {
+            logger.fine("get target for impl $impl")
             synchronized(tableLock) {
-                return implTable[WeakReference(impl)]
+                return implTable[WeakRef(impl)]
             }
         }
 

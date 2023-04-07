@@ -1,7 +1,9 @@
 package com.cs328.myrmi.transport.tcp
 
+import com.cs328.myrmi.transport.Channel
 import com.cs328.myrmi.transport.Endpoint
 import com.cs328.myrmi.transport.Target
+import java.io.Serializable
 import java.net.ServerSocket
 import java.net.Socket
 
@@ -11,8 +13,8 @@ import java.net.Socket
 class TCPEndpoint private constructor(
     val host: String,
     private var listenPort: Int,
-    @Transient val isLocal: Boolean
-): Endpoint {
+    val isLocal: Boolean
+): Endpoint, Serializable {
     val port get() = listenPort
 
     /** create a remote end point */
@@ -21,8 +23,14 @@ class TCPEndpoint private constructor(
     @delegate:Transient
     private val transports by lazy { TCPTransport(this) }
 
-    @delegate:Transient
-    override val channel by lazy { TCPChannel(this) }
+    @Transient
+    var epChannel: Channel? = null
+    override val channel: Channel get() {
+        if (epChannel == null) {
+            epChannel = TCPChannel(this)
+        }
+        return epChannel as Channel
+    }
 
     override fun exportObject(obj: Target) {
         if (!isLocal)
@@ -31,6 +39,7 @@ class TCPEndpoint private constructor(
     }
 
     companion object {
+        private const val serialVersionUID = -1578066115088043375L
         /**
          * create a local endpoint on a certain port.
          * this method will ensure that each port has only one transport for receiving msg
@@ -60,8 +69,15 @@ class TCPEndpoint private constructor(
             throw IllegalStateException("Cannot create server socket for non-local endpoint")
         val server = ServerSocket(port)
         if (listenPort == 0) {
+            //replace with new call
             listenPort = server.localPort
+            localEndpoints[listenPort] = this
+            localEndpoints.remove(0)
         }
         return server
+    }
+
+    override fun toString(): String {
+        return "[$host:$port]"
     }
 }

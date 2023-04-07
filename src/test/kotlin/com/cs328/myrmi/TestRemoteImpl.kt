@@ -1,19 +1,10 @@
 package com.cs328.myrmi
 
-import com.cs328.myrmi.server.UnicastRemoteObject
 import kotlin.random.Random
 
-interface AnotherTestInterface: Remote {
-    fun square(x: Int): Int
-    fun add(x: Int, y: Int): Int
 
-    fun getValue(): Int
-    fun testExp()
-
-    fun print(str: String)
-}
-
-class TestRemoteImpl: UnicastRemoteObject(), AnotherTestInterface {
+class TestRemoteImpl(private var counter: Int): TestRemoteInterface {
+    constructor(): this(0)
     override fun square(x: Int): Int {
         return x * x
     }
@@ -34,5 +25,9 @@ class TestRemoteImpl: UnicastRemoteObject(), AnotherTestInterface {
 
     override fun print(str: String) {
         println(str)
+    }
+
+    override fun increase(): Int {
+        return ++counter
     }
 }

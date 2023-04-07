@@ -13,9 +13,7 @@ class LiveRef(val id: ObjID, val endpoint: Endpoint) : Serializable {
         private const val serialVersionUID = -3771632406492077964L
     }
 
-
-    @delegate:Transient
-    val channel: Channel by lazy { endpoint.channel }
+    val channel get() = endpoint.channel
 
     /** get a live ref basing on the local endpoint */
     constructor(id: ObjID, port: Int) : this(id, TCPEndpoint.getLocalEndPoint(port))
