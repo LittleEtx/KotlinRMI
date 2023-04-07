@@ -21,7 +21,7 @@ class MarshalOutputStream(out: OutputStream) : ObjectOutputStream(out) {
         return if (obj is Remote) {
             //replace obj with remote stub proxy if the object has been exported
             val target = ObjTable.getTarget(obj)
-            logger.fine("write remote object $obj as ${target?.stub ?: obj}")
+            logger.fine("write remote object $obj as ${if (target == null) "obj" else "stub"}")
             target?.stub ?: obj
         } else {
             obj
