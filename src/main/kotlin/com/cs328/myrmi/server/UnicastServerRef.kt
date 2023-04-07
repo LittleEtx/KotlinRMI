@@ -32,7 +32,7 @@ class UnicastServerRef(liveRef: LiveRef) : UnicastRef(liveRef), Dispatcher {
             val input = call.inputStream
             val methodHash: Long
             try {
-                methodHash = input.readLong()
+                methodHash = input.readObject() as Long
             } catch (e: Exception) {
                 throw UnmarshalException("failed to read method hash", e)
             }

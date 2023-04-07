@@ -174,7 +174,6 @@ class TCPTransport(private var endpoint: TCPEndpoint) : Transport() {
                 }
                 TransportConstants.DGC_ACK -> {
                     logger.warning("accept DGC ack from ${ep.host}:${ep.port}, but DGC not yet implemented")
-                    TODO("DGC not yet implemented")
                 }
                 else -> {
                     logger.info("unknown operation from ${ep.host}:${ep.port}, connection will be closed")

@@ -14,11 +14,11 @@ class StreamRemoteCall(private val connection: Connection) : RemoteCall {
      */
     constructor(conn: Connection, id: ObjID, methodHash: Long): this(conn) {
         try {
-            val output = connection.outputStream
+            val output = conn.outputStream
             output.write(TransportConstants.CALL)
             //now get output stream, this action will write a header to the stream
             outputStream.writeObject(id)
-            outputStream.writeLong(methodHash)
+            outputStream.writeObject(methodHash)
         } catch (e: IOException) {
             throw MarshalException("failed to write remote method head", e)
         }

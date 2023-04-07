@@ -1,6 +1,7 @@
 package com.cs328.myrmi.server
 
 import com.cs328.myrmi.exception.MarshalException
+import com.cs328.myrmi.exception.RemoteException
 import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.transport.LiveRef
 import com.cs328.myrmi.transport.StreamRemoteCall
@@ -14,6 +15,11 @@ open class UnicastRef(val liveRef: LiveRef) : RemoteRef {
     private val logger by lazy {  RMILogger.of(UnicastRef::class.java.name) }
     override fun invoke(method: Method, params: Array<Any?>): Any? {
         logger.info("Client invoke remote method")
+
+        //check params match method
+        if (method.parameterCount != params.size) {
+            throw RemoteException("internal exception: parameter count mismatch")
+        }
 
         val conn = liveRef.channel.newConnection()
         logger.fine("connection established")

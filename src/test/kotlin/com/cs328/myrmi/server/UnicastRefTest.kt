@@ -9,6 +9,9 @@ import java.util.logging.Level
 
 interface TestRemoteClass : Remote {
     fun square(x: Int): Int
+    fun add(x: Int, y: Int): Int
+    fun print(str: String)
+    fun getValue(): Int
     fun testExp()
 }
 
@@ -22,11 +25,25 @@ fun main() {
 
     val liveRef = LiveRef(ObjID(114514), TCPEndpoint("localhost", 8080))
     val ref = UnicastServerRef(liveRef)
-    val method = TestRemoteClass::class.java.declaredMethods[0]
+
+    val method = TestRemoteClass::class.java.getDeclaredMethod("square", Int::class.java)
     println(method)
     println(ref.invoke(method, arrayOf(3)))
     println(ref.invoke(method, arrayOf(5)))
-    val method1 = TestRemoteClass::class.java.declaredMethods[1]
-    println(method1)
-    println(ref.invoke(method, emptyArray()))
+
+    val multiParaMethod = TestRemoteClass::class.java.getDeclaredMethod("add", Int::class.java, Int::class.java)
+    println(multiParaMethod)
+    println(ref.invoke(multiParaMethod, arrayOf(3,8)))
+
+    val noReturnMethod = TestRemoteClass::class.java.getDeclaredMethod("print", String::class.java)
+    println(noReturnMethod)
+    println(ref.invoke(noReturnMethod, arrayOf("Hello World!")))
+
+    val noParaMethod = TestRemoteClass::class.java.getDeclaredMethod("getValue")
+    println(noParaMethod)
+    println(ref.invoke(noParaMethod, emptyArray()))
+
+    val excepMethod = TestRemoteClass::class.java.getDeclaredMethod("testExp")
+    println(excepMethod)
+    println(ref.invoke(excepMethod, emptyArray()))
 }
