@@ -24,7 +24,7 @@ fun main() {
     logger.fine("test UnicastRef")
 
     val liveRef = LiveRef(ObjID(114514), TCPEndpoint("localhost", 8080))
-    val ref = UnicastServerRef(liveRef)
+    val ref = UnicastRef(liveRef)
 
     val method = TestRemoteClass::class.java.getDeclaredMethod("square", Int::class.java)
     println(method)
@@ -43,7 +43,7 @@ fun main() {
     println(noParaMethod)
     println(ref.invoke(noParaMethod, emptyArray()))
 
-    val excepMethod = TestRemoteClass::class.java.getDeclaredMethod("testExp")
-    println(excepMethod)
-    println(ref.invoke(excepMethod, emptyArray()))
+    val exceptMethod = TestRemoteClass::class.java.getDeclaredMethod("testExp")
+    println(exceptMethod)
+    println(ref.invoke(exceptMethod, emptyArray()))
 }

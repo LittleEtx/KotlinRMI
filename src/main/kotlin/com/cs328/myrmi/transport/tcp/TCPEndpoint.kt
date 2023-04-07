@@ -8,7 +8,7 @@ import java.net.Socket
 class TCPEndpoint private constructor(
     val host: String,
     val port: Int,
-    private val isLocal: Boolean
+    val isLocal: Boolean
 ): Endpoint {
 
     /** create a remote end point */

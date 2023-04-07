@@ -26,6 +26,6 @@ class ObjID(
     }
 
     override fun toString(): String {
-        return "ObjID(id=$id)"
+        return "[$id]"
     }
 }

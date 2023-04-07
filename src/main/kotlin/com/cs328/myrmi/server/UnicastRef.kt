@@ -58,4 +58,13 @@ open class UnicastRef(val liveRef: LiveRef) : RemoteRef {
         return result
     }
 
+    override val remoteToString: String
+        get() = "${javaClass.name.split(".").last()}[$liveRef]"
+    override val remoteHashCode: Int
+        get() = liveRef.hashCode()
+
+    override fun remoteEquals(other: Any?): Boolean {
+        return other is UnicastRef && liveRef.remoteEquals(other.liveRef)
+    }
+
 }
