@@ -35,7 +35,7 @@ class RemoteObjectInvocationHandler(remoteRef: RemoteRef) : RemoteObject(remoteR
             "toString" -> proxy?.getString()
             "hashCode" -> hashCode() //hashcode of this remote object
             //equals if proxy equals or handler equals
-            "equals" -> proxy == args?.get(0) ||
+            "equals" -> proxy === args?.get(0) ||
                     (Proxy.isProxyClass(args?.get(0)?.javaClass)
                     && Proxy.getInvocationHandler(args?.get(0)) == this)
             else -> throw IllegalArgumentException("unknown object method ${method.name}")

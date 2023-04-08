@@ -33,7 +33,7 @@ class LiveRef(val id: ObjID, val endpoint: Endpoint) : Serializable {
 
     override fun toString(): String {
         endpoint as TCPEndpoint
-        return "[endpoint:$endpoint(${if (endpoint.isLocal) "local" else "remote"}), objID:$id]"
+        return "endpoint:$endpoint(${if (endpoint.isLocal) "local" else "remote"}), objID:$id"
     }
 
     override fun hashCode(): Int {

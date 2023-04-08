@@ -12,6 +12,8 @@ fun main() {
     } catch (e: Exception) {
         println("Exception caught from server: ${e.message}")
     }
+    println("test remote toString: $test")
+    val test2 = Naming.lookup("rmi://localhost:8080/test") as TestRemoteInterface
+    println("test remote equals: ${test == test2}")
     test.print("Testing remote naming finished")
-
 }

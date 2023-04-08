@@ -9,12 +9,15 @@ abstract class RemoteObject(val remoteRef: RemoteRef) : Remote, Serializable {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return javaClass == other?.javaClass
+        return if (other is RemoteObject) {
+            remoteRef.remoteEquals(other.remoteRef)
+        } else {
+            other == this
+        }
     }
 
     override fun hashCode(): Int {
-        return remoteRef.hashCode()
+        return remoteRef.remoteHashCode
     }
 
     override fun toString(): String {
