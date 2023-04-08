@@ -12,6 +12,6 @@ fun main() {
     Naming.rebind("rmi://localhost:8080/test", impl)
      val test = Naming.lookup("rmi://localhost:8080/test") as TestRemoteInterface
     test.print("Testing remote naming begins")
-    UnicastRemoteObject.closeObject(impl)
+    UnicastRemoteObject.closeExport(impl)
     test.print("Testing remote naming begins")
 }

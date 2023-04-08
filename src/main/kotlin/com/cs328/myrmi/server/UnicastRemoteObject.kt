@@ -37,7 +37,7 @@ open class UnicastRemoteObject(port: Int) :
          *             Whether true or not no new connections to the object will be allowed.
          */
         @JvmStatic
-        fun closeObject(obj: Remote, force: Boolean = false) {
+        fun closeExport(obj: Remote, force: Boolean = false) {
             return ObjTable.removeTarget(obj, force)
         }
     }
