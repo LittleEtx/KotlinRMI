@@ -56,8 +56,7 @@ class RemoteObjectInvocationHandler(remoteRef: RemoteRef) : RemoteObject(remoteR
     }
 
     private fun Any.getString(): String {
-        val interfaces = this.javaClass.interfaces
-        return "Proxy[${interfaces.find { it.name != "com.cs328.myrmi.Remote" }
-            ?.name?.split(".")?.last()}, $this]"
+        val interfaceName = this::class.java.interfaces.find { it.name != "com.cs328.myrmi.Remote" }
+        return "Proxy[${interfaceName?.name?.split(".")?.last()}, ${this@RemoteObjectInvocationHandler}]"
     }
 }

@@ -11,7 +11,7 @@ interface Registry: Remote {
 
     fun rebind(name: String, obj: Remote)
 
-    fun lookup(name: String): Remote?
+    fun lookup(name: String): Remote
 
     fun list(): List<String>
 }

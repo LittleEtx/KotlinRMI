@@ -43,11 +43,11 @@ class RegistryImpl(port: Int) : Registry {
         }
     }
 
-    override fun lookup(name: String): Remote? {
+    override fun lookup(name: String): Remote {
         synchronized(bindings) {
             if (!bindings.containsKey(name))
                 throw NotBoundException("Name $name not bound")
-            return bindings[name]
+            return bindings[name]!!
         }
     }
 
