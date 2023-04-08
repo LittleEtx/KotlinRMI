@@ -8,8 +8,9 @@ class Target private constructor(
     val weakRef: WeakRef<Remote>,
     val id: ObjID,
     val stub: Remote, //the proxy for this obj
-    val dispatcher: Dispatcher,
+    private var dispatch: Dispatcher?
 ) {
+    val dispatcher get() = dispatch
     constructor(obj: Remote, id: ObjID, stub: Remote, dispatcher: Dispatcher, permanent: Boolean) :
             this(WeakRef(obj), id, stub, dispatcher) {
         if (permanent) {
@@ -19,8 +20,9 @@ class Target private constructor(
 
     lateinit var exportedTransport: Transport
 
-    fun markRemoved() {
+    fun markRemoved(force: Boolean) {
         weakRef.unpin()
+        if (force) dispatch = null
         if (this::exportedTransport.isInitialized) {
             exportedTransport.onTargetClosed()
         }

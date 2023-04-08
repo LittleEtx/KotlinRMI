@@ -5,7 +5,6 @@ import com.cs328.myrmi.exception.ExportException
 import com.cs328.myrmi.exception.NoSuchObjectException
 import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.server.ObjID
-import java.lang.ref.WeakReference
 
 /** the class that records all exported object */
 class ObjTable private constructor() {
@@ -44,15 +43,15 @@ class ObjTable private constructor() {
             }
         }
 
-        fun removeTarget(obj: Remote) {
+        fun removeTarget(obj: Remote, force: Boolean) {
             synchronized(tableLock) {
-                if (!implTable.containsKey(WeakReference(obj))) {
+                if (!implTable.containsKey(WeakRef(obj))) {
                     throw NoSuchObjectException("object not exported")
                 }
-                val target = implTable[WeakReference(obj)]!!
+                val target = implTable[WeakRef(obj)]!!
                 objTable.remove(ObjectEndpoint(target.id, target.exportedTransport))
                 implTable.remove(target.weakRef)
-                target.markRemoved()
+                target.markRemoved(force)
             }
         }
     }

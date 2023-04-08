@@ -5,7 +5,6 @@ import com.cs328.myrmi.exception.NoSuchObjectException
 import com.cs328.myrmi.runtime.RMILogger
 import com.cs328.myrmi.server.ObjID
 import com.cs328.myrmi.server.RemoteCall
-import java.io.IOException
 
 /**
  * The class that deals with remote method invocation.
@@ -39,8 +38,8 @@ abstract class Transport {
             throw NoSuchObjectException("no such implement in the table")
         }
         try {
-            target.dispatcher.dispatch(target.weakRef.get()!!, call)
-        } catch (e: IOException) {
+            target.dispatcher!!.dispatch(target.weakRef.get()!!, call)
+        } catch (e: Exception) {
             //something goes wrong when dealing with remote call
             return false
         }
