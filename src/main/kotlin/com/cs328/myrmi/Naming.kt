@@ -14,27 +14,32 @@ class Naming private constructor() {
          * Binds the specified url to a remote object.
          * @throws AlreadyBoundException
          */
+        @JvmStatic
         fun bind(url: String, obj: Remote) {
             val (host, port, name) = parseURL(url)
             LocateRegistry.getRegistry(host, port).bind(name, obj)
         }
 
+        @JvmStatic
         fun unbind(url: String) {
             val (host, port, name) = parseURL(url)
             LocateRegistry.getRegistry(host, port).unbind(name)
         }
 
+        @JvmStatic
         fun rebind(url: String, obj: Remote) {
             val (host, port, name) = parseURL(url)
             LocateRegistry.getRegistry(host, port).rebind(name, obj)
         }
 
+        @JvmStatic
         fun lookup(url: String): Remote {
             val (host, port, name) = parseURL(url)
             return LocateRegistry.getRegistry(host, port).lookup(name)
         }
 
 
+        @JvmStatic
         fun list(url: String): List<String> {
             val (host, port, name) = parseURL(url)
             val prefix = "${if (port > 0) "$host:$port" else host}/}"

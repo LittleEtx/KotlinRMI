@@ -16,14 +16,15 @@ open class UnicastRemoteObject(port: Int) :
     }
 
     companion object {
+        @JvmStatic
         fun exportObject(obj: Remote): Remote {
             return exportObject(obj, 0)
         }
+        @JvmStatic
         fun exportObject(obj: Remote, port: Int): Remote {
             val serverRef = UnicastServerRef(LiveRef(ObjID.new(), port))
             return serverRef.exportObject(obj, true)
         }
-
         private fun exportObject(obj: Remote, remoteRef: UnicastServerRef): Remote {
             return remoteRef.exportObject(obj, true)
         }

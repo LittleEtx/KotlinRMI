@@ -20,6 +20,7 @@ class LocateRegistry private constructor() {
             return Util.createProxy(Registry::class.java, UnicastRef(liveRef)) as Registry
         }
 
+        @JvmStatic
         /** create a registry on local host */
         fun createRegistry(port: Int): Registry {
             return RegistryImpl(port)
