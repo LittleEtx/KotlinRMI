@@ -4,18 +4,19 @@ import com.cs328.myrmi.Remote
 import com.cs328.myrmi.exception.AlreadyBoundException
 import com.cs328.myrmi.exception.NotBoundException
 import com.cs328.myrmi.server.ObjID
+import com.cs328.myrmi.server.RemoteObject
 import com.cs328.myrmi.server.UnicastServerRef
 import com.cs328.myrmi.transport.LiveRef
 
-class RegistryImpl(port: Int) : Registry {
+class RegistryImpl(serverRef: UnicastServerRef) : RemoteObject(serverRef), Registry {
     companion object {
         val id = ObjID(ObjID.REGISTRY_ID)
     }
 
+    //create skeleton and export itself
+    constructor(port: Int) : this(UnicastServerRef(LiveRef(id, port)))
+
     init {
-        //create skeleton and export itself
-        val liveRef = LiveRef(id, port)
-        val serverRef = UnicastServerRef(liveRef)
         serverRef.exportObject(this, true)
     }
 
