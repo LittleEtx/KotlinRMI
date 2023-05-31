@@ -1,4 +1,5 @@
-package com.cs328.myrmi;
+import com.cs328.myrmi.Naming;
+import com.cs328.myrmi.TestRemoteInterface;
 
 public class NamingClientTest {
     public static void main(String[] args) {

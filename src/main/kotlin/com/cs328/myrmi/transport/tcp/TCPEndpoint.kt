@@ -46,7 +46,7 @@ class TCPEndpoint private constructor(
          */
         fun getLocalEndPoint(port: Int): TCPEndpoint {
             synchronized(localEndpoints) {
-                return localEndpoints.getOrPut(port) { TCPEndpoint("localhost", port, true) }
+                return localEndpoints.getOrPut(port) { TCPEndpoint("0.0.0.0", port, true) }
             }
         }
 

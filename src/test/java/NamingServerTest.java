@@ -1,5 +1,6 @@
-package com.cs328.myrmi;
-
+import com.cs328.myrmi.Naming;
+import com.cs328.myrmi.TestRemoteImpl;
+import com.cs328.myrmi.TestRemoteInterface;
 import com.cs328.myrmi.registry.LocateRegistry;
 import com.cs328.myrmi.server.UnicastRemoteObject;
 public class NamingServerTest {

@@ -3,7 +3,7 @@ package com.cs328.myrmi.server
 import com.cs328.myrmi.Naming
 import com.cs328.myrmi.TestRemoteImpl
 import com.cs328.myrmi.TestRemoteInterface
-import com.cs328.myrmi.registry.LocateRegistry.Companion.createRegistry
+import com.cs328.myrmi.registry.LocateRegistry.createRegistry
 
 fun main() {
     createRegistry(8080)

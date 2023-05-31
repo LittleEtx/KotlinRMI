@@ -24,7 +24,7 @@ open class UnicastRef(val liveRef: LiveRef) : RemoteRef {
 
         val conn = liveRef.channel.newConnection()
         logger.fine("connection established")
-        val call: RemoteCall
+        val call: StreamRemoteCall
         try {
             call = StreamRemoteCall(conn, liveRef.id, Util.getMethodHash(method))
             //write params
