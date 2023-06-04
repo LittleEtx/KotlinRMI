@@ -44,10 +44,13 @@ class TCPEndpoint private constructor(
          * create a local endpoint on a certain port.
          * this method will ensure that each port has only one transport for receiving msg
          */
-        fun getLocalEndPoint(port: Int): TCPEndpoint {
+        fun getLocalEndPoint(host: String, port: Int): TCPEndpoint {
             synchronized(localEndpoints) {
-                return localEndpoints.getOrPut(port) { TCPEndpoint("0.0.0.0", port, true) }
+                return localEndpoints.getOrPut(port) { TCPEndpoint(host, port, true) }
             }
+        }
+        fun getLocalEndPoint(port: Int): TCPEndpoint {
+            return getLocalEndPoint("0.0.0.0", port)
         }
 
         /** map from port to endpoints, ensuring no multiply local endpoints on a port are created */
@@ -69,7 +72,7 @@ class TCPEndpoint private constructor(
             throw IllegalStateException("Cannot create server socket for non-local endpoint")
         val server = ServerSocket(port)
         if (listenPort == 0) {
-            //replace with new call
+            //replace with new port
             listenPort = server.localPort
             localEndpoints[listenPort] = this
             localEndpoints.remove(0)

@@ -14,7 +14,7 @@ class RegistryImpl(serverRef: UnicastServerRef) : RemoteObject(serverRef), Regis
     }
 
     //create skeleton and export itself
-    constructor(port: Int) : this(UnicastServerRef(LiveRef(id, port)))
+    constructor(port: Int) : this(UnicastServerRef(LiveRef(id, "0.0.0.0", port)))
 
     init {
         serverRef.exportObject(this, true)

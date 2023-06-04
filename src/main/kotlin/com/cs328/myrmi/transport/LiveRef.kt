@@ -16,6 +16,7 @@ class LiveRef(val id: ObjID, val endpoint: Endpoint) : Serializable {
     val channel get() = endpoint.channel
 
     /** get a live ref basing on the local endpoint */
+    constructor(id: ObjID, host: String, port: Int) : this(id, TCPEndpoint.getLocalEndPoint(host, port))
     constructor(id: ObjID, port: Int) : this(id, TCPEndpoint.getLocalEndPoint(port))
 
     fun exportObject(target: Target) {
